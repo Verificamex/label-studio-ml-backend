@@ -14,7 +14,7 @@ ENV PYTHONUNBUFFERED=1 \
     THREADS=8
 
 # Update the base OS
-RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked \
+RUN --mount=type=cache,id=cacheKey-apt-cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target="/var/lib/apt/lists",sharing=locked \
     set -eux; \
     apt-get update; \
@@ -25,18 +25,18 @@ RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked \
 
 # install base requirements
 COPY requirements-base.txt .
-RUN --mount=type=cache,id=pip-cache,target=${PIP_CACHE_DIR},sharing=locked
+RUN --mount=type=cache,id=cacheKey-pip-cache,target=${PIP_CACHE_DIR},sharing=locked
     pip install -r requirements-base.txt
 
 # install custom requirements
 COPY requirements.txt .
-RUN --mount=type=cache,id=pip-cache,target=${PIP_CACHE_DIR},sharing=locked
+RUN --mount=type=cache,id=cacheKey-pip-cache,target=${PIP_CACHE_DIR},sharing=locked
     pip install -r requirements.txt
 
 # install test requirements if needed
 COPY requirements-test.txt .
 # build only when TEST_ENV="true"
-RUN --mount=type=cache,id=pip-cache,target=${PIP_CACHE_DIR},sharing=locked
+RUN --mount=type=cache,id=cacheKey-pip-cache,target=${PIP_CACHE_DIR},sharing=locked
     if [ "$TEST_ENV" = "true" ]; then \
       pip install -r requirements-test.txt; \
     fi
